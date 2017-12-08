@@ -4,101 +4,143 @@
 var express    = require('express');
 var routes     = express.Router();
 var mongodb    = require('../config/mongo.db');
-var Recipe     = require('../model/recipe.model');
-var Ingredient = require('../model/ingredient.model');
+var Author     = require('../model/author.model');
+var Publisher = require('../model/publisher.model');
+var Book = require('../model/book.model');
 
 
-// GET ALL (RECIPES)
+// GET ALL (books)
 
-routes.get('/recipes', function(req, res) {
+routes.get('/books', function(req, res) {
     res.contentType('application/json');
-    Recipe.find({})
-        .then((recipes) => {
-            console.log(recipes.ingredients);
-            if (recipes.length     === 0) {
-                res.status(200).json('There are no recipes');
+    Book.find({})
+        .then((books) => {
+            console.log(books.authors);
+            if (books.length     === 0) {
+                res.status(200).json('There are no books');
             }
             else {
-                res.status(200).json(recipes);
+                res.status(200).json(books);
             }
         })
         .catch((error) => res.status(401).json(error));
 });
 
-// GET ALL (INGREDIENTS)
+// GET ALL (authors)
 
-routes.get('/ingredients', function(req, res) {
+routes.get('/authors', function(req, res) {
     res.contentType('application/json');
-    Ingredient.find({})
-        .then((ingredients) => {
-        if (ingredients.length === 0) {
-            res.status(200).json('There are no ingredients');
+    Author.find({})
+        .then((authors) => {
+        if (authors.length === 0) {
+            res.status(200).json('There are no authors');
         }
         else {
-            res.status(200).json(ingredients);
+            res.status(200).json(authors);
+        }
+    })
+        .catch((error) => res.status(401).json(error));
+});
+
+// GET ALL (publishers)
+
+routes.get('/publishers', function(req, res) {
+    res.contentType('application/json');
+    Publisher.find({})
+        .then((publishers) => {
+        if (publishers.length === 0) {
+            res.status(200).json('There are no publishers');
+        }
+        else {
+            res.status(200).json(publishers);
         }
     })
         .catch((error) => res.status(401).json(error));
 });
 
 
-// GET BY NAME (RECIPES)
+// GET BY NAME (books)
 
-routes.get('/recipes/:_id', function(req, res) {
+routes.get('/books/:_id', function(req, res) {
     res.contentType('application/json');
-    Recipe.find({ _id: req.params._id} )
-        .then((recipes) => {
-            console.log(recipes);
-            if (recipes.length     === 0) {
-                res.status(200).json('There are no recipes');
+    Book.find({ _id: req.params._id} )
+        .then((books) => {
+            console.log(books);
+            if (books.length     === 0) {
+                res.status(200).json('There are no books');
             }
             else {
-                res.status(200).json(recipes);
+                res.status(200).json(books);
             }
         })
         .catch((error) => res.status(401).json(error));
 });
 
-// GET BY NAME (INGREDIENTS)
+// GET BY NAME (authors)
 
-routes.get('/ingredients/:_id', function(req, res) {
+routes.get('/authors/:_id', function(req, res) {
     res.contentType('application/json');
-    Ingredient.find({ _id: req.params._id} )
-        .then((ingredients) => {
-            console.log(ingredients);
-            if (ingredients.length === 0) {
-                res.status(200).json('There are no ingredients');
+    Author.find({ _id: req.params._id} )
+        .then((authors) => {
+            console.log(authors);
+            if (authors.length === 0) {
+                res.status(200).json('There are no authors');
             }
             else {
-                res.status(200).json(ingredients);
+                res.status(200).json(authors);
+            }
+        })
+        .catch((error) => res.status(401).json(error));
+});
+
+// GET BY NAME (publishers)
+
+routes.get('/publishers/:_id', function(req, res) {
+    res.contentType('application/json');
+    Publisher.find({ _id: req.params._id} )
+        .then((publishers) => {
+            console.log(publishers);
+            if (publishers.length === 0) {
+                res.status(200).json('There are no publishers');
+            }
+            else {
+                res.status(200).json(publishers);
             }
         })
         .catch((error) => res.status(401).json(error));
 });
 
 
-// POST (RECIPES)
+// POST (books)
 
-routes.post('/recipes', function(req, res) {
-    Recipe.create({
-        name: req.body.name,
-        imageURL: req.body.imageURL,
-        description: req.body.description,
-        ingredients: req.body.ingredients
-    }, function(err, result) {
+routes.post('/books', function(req, res) {
+    Book.create(
+        req.body,
+        function(err, result) {
         if (err) return res.send(err);
         res.send(result);
         console.log(result);
     });
 });
 
-// POST (INGREDIENTS)
+// POST (authors)
 
-routes.post('/ingredients', function(req, res) {
-    Ingredient.create({
-        name: req.body.name,
-        amount: req.body.amount,
-    }, function(err, result) {
+routes.post('/authors', function(req, res) {
+    Author.create(
+        req.body,
+        function(err, result) {
+        if (err) return res.send(err);
+        res.send(result);
+        console.log(result);
+    });
+});
+
+// POST (publishers)
+
+routes.post('/publishers', function(req, res) {
+    Publisher.create(
+        req.body,
+        function(err, result) {
         if (err) return res.send(err);
         res.send(result);
         console.log(result);
@@ -106,11 +148,12 @@ routes.post('/ingredients', function(req, res) {
 });
 
 
-// PUT (RECIPES)
+// PUT (books)
 
-routes.put('/recipes/:_id', function(req, res) {
+routes.put('/books/:_id', function(req, res) {
     console.log(req);
-    Recipe.findOneAndUpdate({_id: req.params._id}, req.body,
+    Book.findOneAndUpdate({_id: req.params._id},
+       req.body,
             {
                 runValidators: true
             },
@@ -120,14 +163,25 @@ routes.put('/recipes/:_id', function(req, res) {
         });
 });
 
-// PUT (INGREDIENTS)
+// PUT (authors)
 
-routes.put('/ingredients/:_id', function(req, res) {
-    Ingredient.findOneAndUpdate({_id: req.params._id},
+routes.put('/authors/:_id', function(req, res) {
+    Author.findOneAndUpdate({_id: req.params._id},
+        req.body,
         {
-            name: req.body.name,
-            amount: req.body.amount,
+          runValidators: true
         },
+          function(err, result) {
+            if (err) return res.send(err);
+            res.send(result);
+        });
+});
+
+// PUT (publishers)
+
+routes.put('/publishers/:_id', function(req, res) {
+    Publisher.findOneAndUpdate({_id: req.params._id},
+        req.body,
         {
           runValidators: true
         },
@@ -138,20 +192,30 @@ routes.put('/ingredients/:_id', function(req, res) {
 });
 
 
-// DELETE (RECIPES)
+// DELETE (books)
 
-routes.delete('/recipes/:_id', function(req, res) {
-    Recipe.remove({_id: req.params._id},
+routes.delete('/books/:_id', function(req, res) {
+    Book.remove({_id: req.params._id},
         function (err, result) {
             if (err) return res.send(err);
             res.send(result);
         });
 });
 
-// DELETE (INGREDIENTS)
+// DELETE (authors)
 
-routes.delete('/ingredients/:_id', function(req, res) {
-    Ingredient.remove({_id: req.params._id},
+routes.delete('/authors/:_id', function(req, res) {
+    Author.remove({_id: req.params._id},
+        function (err, result) {
+            if (err) return res.send(err);
+            res.send(result);
+        });
+});
+
+// DELETE (publishers)
+
+routes.delete('/publishers/:_id', function(req, res) {
+    Publisher.remove({_id: req.params._id},
         function (err, result) {
             if (err) return res.send(err);
             res.send(result);
