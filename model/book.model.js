@@ -19,15 +19,15 @@ const BookSchema = new Schema({
     imageURL: {
       type: String
     },
-    author: [{
+    author: {
       type: Schema.Types.Object,
       ref: 'author',
       required: true
-    }],
-    publisher: [{
+    },
+    publisher: {
       type: Schema.Types.Object,
       ref: 'publisher'
-    }]
+    }
 });
 
 
