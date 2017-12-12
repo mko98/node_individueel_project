@@ -9,7 +9,7 @@ var auth = require('../auth/authentication');
 //
 // Hier gaat de gebruiker inloggen.
 // Input: username en wachtwoord
-// ToDo: 
+// ToDo:
 //	 - zoek de username in de database, en vind het password dat opgeslagen is
 // 	 - als user gevonden en password matcht, dan return valide token
 //   - anders is de inlogpoging gefaald - geef foutmelding terug.
@@ -41,5 +41,5 @@ router.post('/login', function(req, res) {
 
 });
 
-// Hiermee maken we onze router zichtbaar voor andere bestanden. 
+// Hiermee maken we onze router zichtbaar voor andere bestanden.
 module.exports = router;

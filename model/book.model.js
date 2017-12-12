@@ -1,6 +1,4 @@
 const mongoose = require('mongoose');
-const AuthorSchema = require('./author.model');
-const PublisherSchema = require('./publisher.model');
 const Schema = mongoose.Schema;
 
 const BookSchema = new Schema({
@@ -20,13 +18,12 @@ const BookSchema = new Schema({
       type: String
     },
     author: {
-      type: Schema.Types.Object,
-      ref: 'author',
-      required: true
+      firstName: String,
+      lastName: String,
+      birthYear: Number
     },
     publisher: {
-      type: Schema.Types.Object,
-      ref: 'publisher'
+      name: String
     }
 });
 
@@ -38,14 +35,14 @@ const book = new Book({
     length: 2,
     language: 'English',
     imageURL: 'http://s3.amazonaws.com/libapps/accounts/16833/images/boek-bruin.png',
-    author: [{
+    author: {
         firstName: 'TestAuthorFirstName',
         lastName: 'TestAuthorLastName',
         birthYear: 1982
-      }],
-    publisher: [{
+      },
+    publisher: {
         name: 'TestPublisher'
-    }]
+    }
 }); book.save();
 console.log(book);
 
