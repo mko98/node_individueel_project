@@ -1,15 +1,11 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "Node server met API naar mongodb database",
+  "description": "Books API",
   "main": "server.js",
   "scripts": {
     "test": "mocha",
     "start": "nodemon server.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/avansbreda.git"
   },
   "keywords": [
     "node",

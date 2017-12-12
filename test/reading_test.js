@@ -1,6 +1,6 @@
 const assert = require('assert');
 const Book = require('../model/book.model');
-describe('Reading users out of the database', () => {
+describe('Reading books out of the database', () => {
     let dolfje;
 
     beforeEach((done) => {
@@ -27,7 +27,7 @@ describe('Reading users out of the database', () => {
        .then(() => done());
     });
 
-   it('finds all users with a title of dolfje', (done) => {
+   it('finds all books with a title of dolfje', (done) => {
     Book.find({title: 'Dolfje Weerwolfje'})
         .then((books) => {
         assert(books[0]._id.toString() === dolfje._id.toString());
@@ -35,7 +35,7 @@ describe('Reading users out of the database', () => {
         });
    }) ;
 
-   it('find a user with particular id', (done) => {
+   it('find a book with particular id', (done) => {
        Book.findOne({ _id: dolfje._id} )
            .then((book) => {
            assert(book.title === 'Dolfje Weerwolfje');
