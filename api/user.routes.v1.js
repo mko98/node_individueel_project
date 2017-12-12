@@ -4,8 +4,6 @@
 var express    = require('express');
 var routes     = express.Router();
 var mongodb    = require('../config/mongo.db');
-var Author     = require('../model/author.model');
-var Publisher = require('../model/publisher.model');
 var Book = require('../model/book.model');
 
 

@@ -4,7 +4,7 @@
   "description": "Node server met API naar mongodb database",
   "main": "server.js",
   "scripts": {
-    "test": "node node_modules/mocha/bin/_mocha ./test/*test.js --reporter spec",
+    "test": "mocha",
     "start": "nodemon server.js"
   },
   "repository": {
@@ -17,12 +17,8 @@
     "mongoose",
     "server"
   ],
-  "author": "Avans Informatica Breda",
+  "author": "Max Koning",
   "license": "ISC",
-  "homepage": "https://github.com/avansbreda#readme",
-  "bugs": {
-    "url": "https://github.com/avansbreda/issues"
-  },
   "dependencies": {
     "body-parser": "^1.17.2",
     "express": "^4.15.2",
@@ -30,7 +26,8 @@
     "jwt-simple": "^0.5.1",
     "moment": "^2.18.1",
     "mongoose": "4.8.x",
-    "morgan": "^1.8.1"
+    "morgan": "^1.8.1",
+    "mocha": "^3.3.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
