@@ -14,7 +14,7 @@ describe('Deleting a book', () => {
                firstName: 'Paul',
                lastName: 'van Loon',
                dateOfBirth: '17/04/1955',
-               imageURL: 'http://www.dolfjeweerwolfje.nl/wp-content/uploads/2015/04/foto_paul.png'
+               authorImageURL: 'http://www.dolfjeweerwolfje.nl/wp-content/uploads/2015/04/foto_paul.png'
              },
            publisher: {
                name: 'Leopold',

@@ -15,7 +15,7 @@ describe('Updating records', () => {
                firstName: 'Paul',
                lastName: 'van Loon',
                dateOfBirth: '17/04/1955',
-               imageURL: 'http://www.dolfjeweerwolfje.nl/wp-content/uploads/2015/04/foto_paul.png'
+               authorImageURL: 'http://www.dolfjeweerwolfje.nl/wp-content/uploads/2015/04/foto_paul.png'
              },
            publisher: {
                name: 'Leopold',
@@ -38,7 +38,7 @@ describe('Updating records', () => {
            });
    }
 
-   it('instance type using set n save', (done) => {
+   it('instance type using set and save', (done) => {
        dolfje.set('title', 'De griezelbus');
        assertName(dolfje.save(), done);
    });
