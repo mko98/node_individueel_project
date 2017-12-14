@@ -4,7 +4,7 @@ var mongodb    = require('../config/mongo.db');
 var Book = require('../model/book.model');
 const neo4j = require('neo4j-driver').v1;
 
-var driver = neo4j.driver("bolt://localhost:7687", neo4j.auth.basic("neo4j", "admin"));
+var driver = neo4j.driver("bolt://hobby-cibhificdbmngbkekladhjal.dbs.graphenedb.com:24786", neo4j.auth.basic("books", "b.8qcEua22tF7V.eqexi1fjfYNV2ypd"));
 var session = driver.session();
 
 routes.get('/books', function(req, res) {
@@ -81,11 +81,9 @@ routes.post('/books', function(req, res) {
     .run("MATCH(a:Book {title:{neoTitle}}),(b:Publisher {name:{neoPublisherName}}) MERGE(a)-[r:PUBLISHED_BY]->(b) RETURN a,b",
     {neoTitle: bookTitle, neoPublisherName: publisherName})
     .then(function(result) {
-      res.status(200).json({"response": "BlogPost added to front page."});
       session.close();
     })
     .catch((error) => {
-      res.status(400).json(error);
     });
 
     Book.create(
@@ -97,10 +95,55 @@ routes.post('/books', function(req, res) {
     });
 });
 
-routes.put('/books/:_id', function(req, res) {
-    console.log(req);
-    Book.findOneAndUpdate({_id: req.params._id},
-       req.body,
+routes.put('/books/:title', function(req, res) {
+  // var bookID = req.body._id;
+  var bookTitle = req.params.title;
+  var bookTitleBody = req.body.title;
+  var bookLength = req.body.length;
+  var bookLanguage = req.body.language;
+  var bookIsbn = req.body.isbn;
+  var bookImageURL = req.body.imageURL;
+
+  var authorFirstName = req.body.author.firstName;
+  var authorLastName = req.body.author.lastName;
+  var authorDateOfBirth = req.body.author.dateOfBirth;
+  var authorImageURL = req.body.author.authorImageURL;
+
+  var publisherName = req.body.publisher.name;
+  var publisherAbbreviation = req.body.publisher.abbreviation;
+  var publisherLocation = req.body.publisher.location;
+  var publisherKvkNumber = req.body.publisher.kvkNumber;
+
+  session
+  .run("MATCH (n { title:{neoTitle}})-[r:PUBLISHED_BY]->() DELETE r",
+  {neoTitle: bookTitle})
+  session.close();
+
+  session
+  .run("MATCH (n { title:{neoTitle}})-[r:WRITTEN_BY]->() DELETE r",
+  {neoTitle: bookTitle})
+  session.close();
+
+  session
+  .run("MATCH(n:Book {title:{neoTitle}}) SET n.title={neoTitleBody}, n.length={neoLength}, n.language={neoLanguage}, n.isbn={neoISBN}, n.imageURL={neoImageURL}",
+  {neoTitle: bookTitle, neoLength: bookLength, neoLanguage: bookLanguage, neoISBN: bookIsbn, neoImageURL: bookImageURL, neoTitleBody: bookTitleBody})
+  session.close();
+
+  session
+  .run("MATCH(a:Book {title:{neoTitleBody}}),(b:Publisher {name:{neoPublisherName}}) MERGE(a)-[r:PUBLISHED_BY]->(b) RETURN a,b",
+  {neoTitleBody: bookTitleBody, neoPublisherName: publisherName})
+  session.close();
+
+  session
+  .run("MATCH(a:Book {title:{neoTitleBody}}),(b:Author {firstName:{neoFirstName}}) MERGE(a)-[r:WRITTEN_BY]->(b) RETURN a,b",
+  {neoTitleBody: bookTitleBody, neoFirstName: authorFirstName})
+    .then(function(result) {
+    session.close();
+  })
+  .catch((error) =>  {
+  });
+
+    Book.findOneAndUpdate({title: req.params.title}, req.body,
             {
                 runValidators: true
             },
@@ -108,10 +151,22 @@ routes.put('/books/:_id', function(req, res) {
               if (err) return res.send(err);
               res.send(result);
         });
+
 });
 
-routes.delete('/books/:_id', function(req, res) {
-    Book.remove({_id: req.params._id},
+routes.delete('/books/:title', function(req, res) {
+    var bookTitle = req.params.title;
+
+    session
+    .run("MATCH (n:Book{title:{neoTitle}}) DETACH DELETE n",
+    {neoTitle: bookTitle})
+    .then(function(result) {
+    session.close();
+  })
+  .catch((error) =>  {
+  });
+
+    Book.remove({title: req.params.title},
         function (err, result) {
             if (err) return res.send(err);
             res.send(result);
@@ -147,7 +202,5 @@ routes.get('/publishers/:name', function (req, res) {
       res.status(400).json(error);
     });
 });
-
-
 
 module.exports = routes;
