@@ -1,6 +1,7 @@
 //
 // server.js
 //
+var path = require('path');
 var http = require('http');
 var express = require('express');
 var bodyParser = require('body-parser')
@@ -17,7 +18,7 @@ var app = express();
 // Je zou dit kunnen vergelijken met het 'public' maken van attributen in Java.
 // Javascript neemt impliciet aan dat bovenaan ieder bestand de volgende regel staat.
 // Deze kun je dus weglaten!
-// Zie eventueel ook: https://www.sitepoint.com/understanding-module-exports-exports-node-js/  
+// Zie eventueel ook: https://www.sitepoint.com/understanding-module-exports-exports-node-js/
 module.exports = {};
 
 // bodyParser zorgt dat we de body uit een request kunnen gebruiken,
@@ -44,6 +45,8 @@ app.use(bodyParser.json({
 app.set('port', (process.env.PORT || config.env.webPort));
 app.set('env', (process.env.ENV || 'development'))
 
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
 // wanneer je je settings wilt controleren
 // console.dir(config);
 // console.log(config.dburl);
@@ -83,7 +86,7 @@ app.use(function (err, req, res, next) {
     res.status(401).send(error);
 });
 
-// Fallback - als geen enkele andere route slaagt wordt deze uitgevoerd. 
+// Fallback - als geen enkele andere route slaagt wordt deze uitgevoerd.
 app.use('*', function (req, res) {
     res.status(400);
     res.json({

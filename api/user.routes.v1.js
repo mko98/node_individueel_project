@@ -2,10 +2,12 @@ var express    = require('express');
 var routes     = express.Router();
 var mongodb    = require('../config/mongo.db');
 var Book = require('../model/book.model');
+var parser = require('parse-neo4j');
 const neo4j = require('neo4j-driver').v1;
 
 var driver = neo4j.driver("bolt://hobby-cibhificdbmngbkekladhjal.dbs.graphenedb.com:24786", neo4j.auth.basic("books", "b.8qcEua22tF7V.eqexi1fjfYNV2ypd"));
 var session = driver.session();
+
 
 routes.get('/books', function(req, res) {
     res.contentType('application/json');
@@ -55,29 +57,29 @@ routes.post('/books', function(req, res) {
   var publisherKvkNumber = req.body.publisher.kvkNumber;
 
 
-  session
+  var result = session
     .run("MERGE(n:Book {title:{neoTitle}, length:{neoLength}, language:{neoLanguage}, isbn:{neoISBN}, imageURL:{neoImageURL}})",
     {neoTitle: bookTitle, neoLength: bookLength, neoLanguage: bookLanguage, neoISBN: bookIsbn, neoImageURL: bookImageURL})
     session.close();
 
-    session
+    var result = session
     .run("MERGE(g:Author {firstName:{neoFirstName}, lastName:{neoLastName}, dateOfBirth:{neoDateOfBirth}, authorImageURL:{neoAuthorImageURL}}) RETURN g",
     {neoFirstName: authorFirstName, neoLastName: authorLastName, neoDateOfBirth: authorDateOfBirth, neoAuthorImageURL: authorImageURL})
     session.close();
 
 
-    session
+    var result = session
     .run("MATCH(a:Book {title:{neoTitle}}),(b:Author {firstName:{neoFirstName}}) MERGE(a)-[r:WRITTEN_BY]->(b) RETURN a,b",
     {neoTitle: bookTitle, neoFirstName: authorFirstName})
     session.close();
 
 
-    session
+    var result = session
     .run("MERGE(n:Publisher {name:{neoPublisherName}, abbreviation:{neoAbbreviation}, location:{neoLocation}, kvkNumber:{neoKvkNumber}}) RETURN n",
     {neoPublisherName: publisherName, neoAbbreviation: publisherAbbreviation, neoLocation: publisherLocation, neoKvkNumber: publisherKvkNumber})
     session.close();
 
-    session
+    var result = session
     .run("MATCH(a:Book {title:{neoTitle}}),(b:Publisher {name:{neoPublisherName}}) MERGE(a)-[r:PUBLISHED_BY]->(b) RETURN a,b",
     {neoTitle: bookTitle, neoPublisherName: publisherName})
     .then(function(result) {
@@ -114,34 +116,40 @@ routes.put('/books/:title', function(req, res) {
   var publisherLocation = req.body.publisher.location;
   var publisherKvkNumber = req.body.publisher.kvkNumber;
 
-  session
+  var result = session
   .run("MATCH (n { title:{neoTitle}})-[r:PUBLISHED_BY]->() DELETE r",
   {neoTitle: bookTitle})
   session.close();
 
-  session
+  var result = session
   .run("MATCH (n { title:{neoTitle}})-[r:WRITTEN_BY]->() DELETE r",
   {neoTitle: bookTitle})
   session.close();
 
-  session
+  var result = session
   .run("MATCH(n:Book {title:{neoTitle}}) SET n.title={neoTitleBody}, n.length={neoLength}, n.language={neoLanguage}, n.isbn={neoISBN}, n.imageURL={neoImageURL}",
   {neoTitle: bookTitle, neoLength: bookLength, neoLanguage: bookLanguage, neoISBN: bookIsbn, neoImageURL: bookImageURL, neoTitleBody: bookTitleBody})
   session.close();
 
-  session
+  var result = session
   .run("MATCH(a:Book {title:{neoTitleBody}}),(b:Publisher {name:{neoPublisherName}}) MERGE(a)-[r:PUBLISHED_BY]->(b) RETURN a,b",
   {neoTitleBody: bookTitleBody, neoPublisherName: publisherName})
   session.close();
 
-  session
+  var result = session
   .run("MATCH(a:Book {title:{neoTitleBody}}),(b:Author {firstName:{neoFirstName}}) MERGE(a)-[r:WRITTEN_BY]->(b) RETURN a,b",
   {neoTitleBody: bookTitleBody, neoFirstName: authorFirstName})
-    .then(function(result) {
-    session.close();
-  })
-  .catch((error) =>  {
-  });
+  var parsedResult = result
+      .then(parser.parse)
+      .then(function(parsed){
+          parsed.forEach(function(parsedRecord) {
+              console.log(parsedRecord);
+          });
+      })
+      .catch(function(parseError) {
+          console.log(parseError);
+      });
+
 
     Book.findOneAndUpdate({title: req.params.title}, req.body,
             {
@@ -202,5 +210,7 @@ routes.get('/publishers/:name', function (req, res) {
       res.status(400).json(error);
     });
 });
+
+
 
 module.exports = routes;
